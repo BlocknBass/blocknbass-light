@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "blocknbass-light",
+  "version": "${version}",
+
+  "name": "Block & Bass Light",
+  "description": "Block & Bass mod that is responsible for lighting",
+  "authors": [
+    "Block & Bass Dev Team"
+  ],
+  "contact": {
+    "homepage": "https://blocknbass.nl",
+    "sources": "https://github.com/BlocknBass/blocknbass-light"
+  },
+
+  "license": "MIT",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "nl.blocknbass.light.BlocknBassLight"
+    ],
+    "blocknbass-mod": [
+      "nl.blocknbass.light.BlocknBassModLight"
+    ]
+  },
+  "mixins": [
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.15.x",
+    "blocknbass-core": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
