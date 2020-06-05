@@ -26,6 +26,7 @@
     ]
   },
   "mixins": [
+    "blocknbass-light.mixins.json"
   ],
 
   "depends": {
