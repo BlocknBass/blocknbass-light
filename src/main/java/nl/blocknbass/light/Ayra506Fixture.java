@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,8 +15,17 @@ import org.lwjgl.opengl.GL11;
 
 public class Ayra506Fixture {
     public Vector3d position;
-    public float pitch, yaw;
+    public float pan, tilt;
     public int r, g, b, a;
+
+    Ayra506Fixture() {
+        pan = 0;
+        tilt = 0;
+        r = 255;
+        g = 255;
+        b = 255;
+        a = 255;
+    }
 
     public void render(MatrixStack matrices, MinecraftClient client, float tickDelta) {
         RenderSystem.pushMatrix();
@@ -37,21 +45,14 @@ public class Ayra506Fixture {
         double dz = cameraPos.getZ();
         matrices.translate(position.x  - dx, position.y - dy, position.z - dz);
         matrices.translate(0.5, 0.5, 0.5);
-        double expand = 0.002;
 
-        float minX = 0;
+        float minX = -0.5f;
         float minY = 0;
-        float minZ = 0;
-        Vector3f maxVec = new Vector3f(1, 256, 1);
-        maxVec.rotate(new Quaternion(new Vector3f(0, 0, 1), 90, true));
-        float maxX = maxVec.getX();
-        float maxY = maxVec.getY();
-        float maxZ = maxVec.getZ();
-
-        r = 255;
-        g = 255;
-        b = 255;
-        a = 255;
+        float minZ = -0.5f;
+        float maxX = 0.5f;
+        float maxY = 256;
+        float maxZ = 0.5f;
+        matrices.multiply(new Quaternion(0, pan, tilt, true));
 
         Matrix4f matrix = matrices.peek().getModel();
 
