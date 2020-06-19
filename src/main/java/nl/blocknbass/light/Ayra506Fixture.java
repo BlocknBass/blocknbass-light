@@ -15,12 +15,19 @@ import org.lwjgl.opengl.GL11;
 
 public class Ayra506Fixture {
     public Vector3d position;
+    public float targetPan, targetTilt;
     public float pan, tilt;
     public int r, g, b, a;
+    public long assign_time;
 
-    Ayra506Fixture() {
+    private static final float VELOCITY = 0.08f;
+
+    public Ayra506Fixture() {
         pan = 0;
         tilt = 0;
+        targetPan = 0;
+        targetTilt = 0;
+        assign_time = 0;
         r = 255;
         g = 255;
         b = 255;
@@ -29,6 +36,8 @@ public class Ayra506Fixture {
 
     public void render(MatrixStack matrices, MinecraftClient client, float tickDelta) {
         RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.disableTexture();
@@ -52,6 +61,14 @@ public class Ayra506Fixture {
         float maxX = 0.5f;
         float maxY = 256;
         float maxZ = 0.5f;
+
+        float time = (client.world.getTime() - assign_time) + tickDelta;
+
+        float dPan = (targetPan - pan) * VELOCITY * time;
+        pan += dPan;
+
+        float dTilt = (targetTilt - tilt) * VELOCITY * time;
+        tilt += dTilt;
         matrices.multiply(new Quaternion(0, pan, tilt, true));
 
         Matrix4f matrix = matrices.peek().getModel();
@@ -91,6 +108,8 @@ public class Ayra506Fixture {
         matrices.pop();
         RenderSystem.popMatrix();
         RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
     }
 }

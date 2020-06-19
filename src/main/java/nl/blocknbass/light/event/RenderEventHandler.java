@@ -16,6 +16,7 @@ public class RenderEventHandler {
 
     public void onRenderWorld(MatrixStack matrices, MinecraftClient client, float tickDelta) {
         for (Ayra506Fixture light : BlocknBassLight.INSTANCE.lights)
-            light.render(matrices, client, tickDelta);
+            if (light != null)
+                light.render(matrices, client, tickDelta);
     }
 }

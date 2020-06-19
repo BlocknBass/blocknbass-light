@@ -24,17 +24,19 @@ public class BlocknBassLightPacketHandler implements BlocknBassPacketHandler {
 
         float pan = ((float)540/255) * lightMessage.getPan() - 270;
         float tilt = ((float)180/255) * lightMessage.getTilt() - 90;
+        int alpha = (int)(0.6 * lightMessage.getWhite());
         /*minecraftClient.execute(() -> MinecraftClient.getInstance().player.addChatMessage(
                 new LiteralText("Tilt value: " + lightMessage.getTilt()), false)
         );*/
         minecraftClient.execute(() -> {
-            Ayra506Fixture light = BlocknBassLight.INSTANCE.lights.get(0);
-            light.pan = pan;
-            light.tilt = tilt;
+            Ayra506Fixture light = BlocknBassLight.INSTANCE.lights.get(lightMessage.getId());
+            light.targetPan = pan;
+            light.targetTilt = tilt;
             light.r = lightMessage.getRed();
             light.g = lightMessage.getGreen();
             light.b = lightMessage.getBlue();
-            light.a = lightMessage.getWhite();
+            light.a = alpha;
+            light.assign_time = minecraftClient.world.getTime();
         });
     }
 }
