@@ -1,5 +1,6 @@
 package nl.blocknbass.light.mixins;
 
+import net.minecraft.client.render.BufferBuilderStorage;
 import nl.blocknbass.light.event.RenderEventHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +15,9 @@ public class WorldRendererMixin {
     @Final
     private net.minecraft.client.MinecraftClient client;
 
+    @Shadow
+    private BufferBuilderStorage bufferBuilders;
+
     @Inject(method = "render",
             at = @At(value = "INVOKE_STRING", args = "ldc=blockentities",
                     target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V"))
@@ -26,6 +30,7 @@ public class WorldRendererMixin {
             net.minecraft.client.util.math.Matrix4f matrix4f,
             CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorld(matrices, this.client, tickDelta);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorld(matrices, this.client,
+                bufferBuilders.getEntityVertexConsumers(), tickDelta);
     }
 }

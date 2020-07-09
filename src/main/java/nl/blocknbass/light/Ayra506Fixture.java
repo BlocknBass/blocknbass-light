@@ -2,16 +2,15 @@ package nl.blocknbass.light;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3d;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
+
+import static net.minecraft.client.render.RenderLayer.of;
 
 public class Ayra506Fixture {
     public Vector3d position;
@@ -20,7 +19,7 @@ public class Ayra506Fixture {
     public int r, g, b, a;
     public long assign_time;
 
-    private static final float VELOCITY = 0.08f;
+    private static final float VELOCITY = 0.05f;
 
     public Ayra506Fixture() {
         pan = 0;
@@ -31,20 +30,29 @@ public class Ayra506Fixture {
         r = 255;
         g = 255;
         b = 255;
-        a = 255;
+        a = 0;
     }
 
-    public void render(MatrixStack matrices, MinecraftClient client, float tickDelta) {
-        RenderSystem.pushMatrix();
+    protected static final RenderPhase.Transparency TRANSLUCENT_TRANSPARENCY = new RenderPhase.Transparency("translucent_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableTexture();
+    }, () -> {
+        RenderSystem.disableBlend();
+    });
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR);
+    protected static final RenderPhase.DiffuseLighting DISABLE_DIFFUSE_LIGHTING = new RenderPhase.DiffuseLighting(false);
+    protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.003921569F);
+    protected static final RenderPhase.Cull DISABLE_CULLING = new RenderPhase.Cull(false);
+    protected static final RenderPhase.Lightmap DISABLE_LIGHTMAP = new RenderPhase.Lightmap(false);
+    protected static final RenderPhase.Overlay DISABLE_OVERLAY_COLOR = new RenderPhase.Overlay(false);
+
+    private RenderLayer getRenderLayer() {
+        RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder().transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DISABLE_DIFFUSE_LIGHTING).alpha(ONE_TENTH_ALPHA).cull(DISABLE_CULLING).lightmap(DISABLE_LIGHTMAP).overlay(DISABLE_OVERLAY_COLOR).build(true);
+        return of("entity_translucent", VertexFormats.POSITION_COLOR, 7, 256, true, true, multiPhaseParameters);
+    }
+
+    public void render(MatrixStack matrices, MinecraftClient client, VertexConsumerProvider provider, float tickDelta) {
+        VertexConsumer buffer = provider.getBuffer(getRenderLayer());
 
         matrices.push();
 
@@ -69,47 +77,46 @@ public class Ayra506Fixture {
 
         float dTilt = (targetTilt - tilt) * VELOCITY * time;
         tilt += dTilt;
-        matrices.multiply(new Quaternion(0, pan, tilt, true));
+        matrices.multiply(new Quaternion(0, pan, 180 - tilt, true));
 
         Matrix4f matrix = matrices.peek().getModel();
 
+        // bottom face
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a).next();
 
+        // west face
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a).next();
 
+        // east face
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a).next();
 
+        // south face
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a).next();
 
+        // north face
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a).next();
 
+        // top face
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a).next();
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a).next();
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a).next();
-        buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a).next();
-
-        tessellator.draw();
+        buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a).next();
 
         matrices.pop();
-        RenderSystem.popMatrix();
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
     }
 }

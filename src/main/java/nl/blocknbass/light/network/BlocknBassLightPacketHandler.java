@@ -24,7 +24,7 @@ public class BlocknBassLightPacketHandler implements BlocknBassPacketHandler {
 
         float pan = ((float)540/255) * lightMessage.getPan() - 270;
         float tilt = ((float)180/255) * lightMessage.getTilt() - 90;
-        int alpha = (int)(0.6 * lightMessage.getWhite());
+        int alpha = lightMessage.getDimmer();
         /*minecraftClient.execute(() -> MinecraftClient.getInstance().player.addChatMessage(
                 new LiteralText("Tilt value: " + lightMessage.getTilt()), false)
         );*/

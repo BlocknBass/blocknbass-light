@@ -39,8 +39,10 @@ public class BlocknBassLightUpdatePacketHandler implements BlocknBassPacketHandl
                 for (FixtureMessage light : list) {
                     Ayra506Fixture fixture = new Ayra506Fixture();
                     fixture.position = new Vector3d(light.getX(), light.getY(), light.getZ());
-                    ensureSize(BlocknBassLight.INSTANCE.lights, light.getId() + 1);
-                    BlocknBassLight.INSTANCE.lights.set(light.getId(), fixture);
+                    minecraftClient.execute(() -> {
+                        ensureSize(BlocknBassLight.INSTANCE.lights, light.getId() + 1);
+                        BlocknBassLight.INSTANCE.lights.set(light.getId(), fixture);
+                    });
                 }
                 break;
             }
@@ -49,18 +51,22 @@ public class BlocknBassLightUpdatePacketHandler implements BlocknBassPacketHandl
                 FixtureMessage light = list.get(0);
                 Ayra506Fixture fixture = new Ayra506Fixture();
                 fixture.position = new Vector3d(light.getX(), light.getY(), light.getZ());
-                ensureSize(BlocknBassLight.INSTANCE.lights, light.getId() + 1);
-                BlocknBassLight.INSTANCE.lights.set(light.getId(), fixture);
+                minecraftClient.execute(() -> {
+                    ensureSize(BlocknBassLight.INSTANCE.lights, light.getId() + 1);
+                    BlocknBassLight.INSTANCE.lights.set(light.getId(), fixture);
+                });
                 break;
             }
             case LightMessageProto.LightsUpdateType.REMOVE_LIGH_VALUE: {
                 List<FixtureMessage> list = lightMessage.getLightsList();
                 FixtureMessage light = list.get(0);
-                if (light.getId() >= BlocknBassLight.INSTANCE.lights.size()) {
-                    System.err.println("removing an out of bounds light");
-                    return;
-                }
-                BlocknBassLight.INSTANCE.lights.remove(light.getId());
+                minecraftClient.execute(() -> {
+                    if (light.getId() >= BlocknBassLight.INSTANCE.lights.size()) {
+                        System.err.println("removing an out of bounds light");
+                        return;
+                    }
+                    BlocknBassLight.INSTANCE.lights.remove(light.getId());
+                });
                 break;
             }
         }
