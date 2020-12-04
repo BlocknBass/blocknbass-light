@@ -27,7 +27,7 @@ public class WorldRendererMixin {
             net.minecraft.client.render.Camera camera,
             net.minecraft.client.render.GameRenderer gameRenderer,
             net.minecraft.client.render.LightmapTextureManager lightmapTextureManager,
-            net.minecraft.client.util.math.Matrix4f matrix4f,
+            net.minecraft.util.math.Matrix4f matrix4f,
             CallbackInfo ci)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorld(matrices, this.client,
