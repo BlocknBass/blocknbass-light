@@ -63,12 +63,12 @@ public class Ayra506Fixture {
         matrices.translate(position.x  - dx, position.y - dy, position.z - dz);
         matrices.translate(0.5, 0.5, 0.5);
 
-        float minX = -0.5f;
+        float minX = -0.35f;
         float minY = 0;
-        float minZ = -0.5f;
-        float maxX = 0.5f;
+        float minZ = -0.35f;
+        float maxX = 0.35f;
         float maxY = 256;
-        float maxZ = 0.5f;
+        float maxZ = 0.35f;
 
         float time = (client.world.getTime() - assign_time) + tickDelta;
 
